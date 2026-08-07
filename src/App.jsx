@@ -20,7 +20,7 @@ function App() {
         <Route path='/resume' element={<Resume/>} />
         <Route path='/resume-details' element={<Info/>} />
         <Route path='/all-resumes' element={<Saved/>} />
-        <Route path='/resumes.:id' element={<View/>} />
+        <Route path='/resumes/:id' element={<View/>} />
         <Route path='/downloads' element={<Download/>} />
         <Route path='/*' element={<Pnf/>} />
       </Routes>
