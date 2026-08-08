@@ -14,7 +14,7 @@ function View() {
         <div className="col-lg-2"></div>
         <div className="col-lg-8">
           <div className="d-flex justify-content-center align-items-center">
-            <button style={{color:'#393a36'}} className="btn fs-3 me-2"><FaFileDownload className='fs-3'/>
+            <button style={{color:'#393a36'}} className='btn mx-2'><FaFileDownload className='fs-3'/>
             Download CV</button>
             <Edit/>
             <Link to={'/all-resumes'} style={{color:'#393a36'}} className='btn mx-2'><MdTextSnippet
