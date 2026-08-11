@@ -26,6 +26,8 @@ function Header() {
           <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
             <Link to={'/'} className='text-light text-decoration-none'>AI rBuilder</Link>
           </Typography>
+          <Link to={'/all-resumes'} className='text-light text-decoration-none fs-6'>All RESUMES</Link>
+          <Link to={'/downloads'} className='text-light text-decoration-none mx-5 fs-6'>All DOWNLOADS</Link>
           <Tooltip title={aboutUsContent}><Button color="inherit" className='fs-6'>ABOUT US</Button></Tooltip>
         </Toolbar>
       </AppBar>

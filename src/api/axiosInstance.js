@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-    baseURl:"https://localhost:3000",
+    baseURL:"http://localhost:3000",
     timeout:5000
 })
 
@@ -11,7 +11,11 @@ axiosInstance.interceptors.response.use(
         return response
     },
     (error)=>{
+        console.log(error);
+        
         if(error.response){
+            console.log(error.response);
+            
             const status = error.response.status
             if(status==401){
                 console.log("Unauthorised Access - Redirect to Login page")
@@ -28,3 +32,5 @@ axiosInstance.interceptors.response.use(
         }
     }
 )
+
+export default axiosInstance

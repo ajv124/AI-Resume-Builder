@@ -4,12 +4,15 @@ import TextField from '@mui/material/TextField';
 import jobRole from '../assets/jobRole.json'
 import jobSkills from '../assets/jobSkills.json'
 import summaries from '../assets/summaries.json'
+import {saveResumeAPI} from '../services/apiService'
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const steps=['Basic Information','Contact Details','Education Details','Review & Submit']
 
 function ResumeInputs({resumeDetails,setResumeDetails}) {
 
-  console.log(resumeDetails)
+  const navigate = useNavigate()
 
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -68,7 +71,7 @@ function ResumeInputs({resumeDetails,setResumeDetails}) {
         break;
       case 3: return(
         <div>
-          <p>Our AI will generate Skills & Summary according to your job role. Click the <b>Generate AI Skills & Summary</b> button to Proceed. </p>
+          <p>Our AI will generate Skills & Summary according to your job role. Click the <b>Generate AI Skills & Summary</b> button to Proceed. <b>Warning!!!</b> Once the form is submitted, it cannot be updated. </p>
         </div>
       )
         break;
@@ -80,6 +83,23 @@ function ResumeInputs({resumeDetails,setResumeDetails}) {
   const generateSkillAndSummary = ()=>{
     setResumeDetails({...resumeDetails,skills:jobSkills[resumeDetails.job],summary:summaries[resumeDetails.job]})
     handleNext()
+  }
+
+  const handleSaveResume = async ()=>{
+    const {fullName,location,job,email,phone,github,linked,degree,college,year,skills,summary}=resumeDetails
+    if (fullName && location && job && email && phone && github && linked && degree && college && year && skills.length>0 && summary){
+      const response = await saveResumeAPI(resumeDetails)
+      if(response.status==201){
+        toast.success("Resume added successfully!!!")
+        const resumeId = response.data.id
+        setTimeout(()=>{
+          navigate(`/resumes/${resumeId}`)
+        },2500)
+        
+      }
+    }else{
+      toast.info("Please fill the form completely!!!")
+    }
   }
 
   return (
@@ -102,7 +122,7 @@ function ResumeInputs({resumeDetails,setResumeDetails}) {
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Box sx={{ flex: '1 1 auto' }} />
-            <Button>
+            <Button onClick={handleSaveResume}>
               FINISH
             </Button>
           </Box>
