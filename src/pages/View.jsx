@@ -14,7 +14,6 @@ function View() {
   const [resume,setResume] = useState({})
 
   const {id} = useParams()
-  console.log(resume)
 
   useEffect(() => {
     getResumeDetails()
@@ -36,7 +35,7 @@ function View() {
           <div className="d-flex justify-content-center align-items-center">
             <button style={{color:'#393a36'}} className='btn mx-2'><FaFileDownload className='fs-3'/>
             Download CV</button>
-            <Edit/>
+            <Edit resumeDetails={resume} setResumeDetails={setResume} />
             <Link to={'/'} style={{color:'#393a36'}} className='btn mx-2'><AiFillBackward
             className='fs-3'/>Home</Link>
           </div>
