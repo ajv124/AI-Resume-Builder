@@ -7,6 +7,9 @@ import { FaEdit } from "react-icons/fa";
 import { FormControl, InputLabel, MenuItem, Select, Step, StepLabel, Stepper, TextField } from '@mui/material';
 import { FaXmark } from 'react-icons/fa6';
 import jobRole from '../assets/jobRole.json'
+import { toast } from 'react-toastify';
+import { useRef } from 'react';
+import { editResumeAPI } from '../services/apiService';
 
 const style = {
   position: 'absolute',
@@ -28,9 +31,36 @@ function Edit({ resumeDetails, setResumeDetails }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const skillRef = useRef()
 
-  const removeSkill = (skill)=>{
-    setResumeDetails({...resumeDetails,skills:resumeDetails.skills.filter(item=>item!=skill)})
+  const removeSkill = (skill) => {
+    setResumeDetails({ ...resumeDetails, skills: resumeDetails.skills.filter(item => item != skill) })
+  }
+
+  const addSkill = (skill) => {
+    if (skill) {
+      if (resumeDetails?.skills?.map(item => item.toLowerCase()).includes(skill.toLowerCase())) {
+        toast.warning("Given skill already exists... Please add another!!!")
+      } else {
+        setResumeDetails({ ...resumeDetails, skills: [...resumeDetails?.skills, skill] })
+      }
+      skillRef.current.value = ""
+    } else {
+      toast.info("Input valid skill!!!")
+    }
+  }
+
+  const handleUpdateResume = async () => {
+    const { fullName, location, job, email, phone, github, linked, degree, college, year, skills, summary } = resumeDetails
+    if (fullName && location && job && email && phone && github && linked && degree && college && year && skills.length > 0 && summary) {
+      const response = await editResumeAPI(resumeDetails.id,resumeDetails)
+      if (response.status == 200) {
+        toast.success("Resume updated successfully!!!")
+        handleClose()
+      }
+    } else {
+      toast.info("Please fill the form completely!!!")
+    }
   }
 
   return (
@@ -84,14 +114,14 @@ function Edit({ resumeDetails, setResumeDetails }) {
             <div>
               <h3>Skills</h3>
               <div className="d-flex p-3">
-                <input type="text" placeholder='Add New Skill' className='form-control' />
-                <Button>add</Button>
+                <input ref={skillRef} type="text" placeholder='Add New Skill' className='form-control' />
+                <Button onClick={() => addSkill(skillRef.current.value)} >add</Button>
               </div>
               <h6>Added Skills : </h6>
               <div className="p-3 d-flex justify-content-between flex-wrap">
                 {
-                  resumeDetails?.skills?.map(skill=>(
-                    <Button onClick={()=>removeSkill(skill)} key={skill} variant='contained' sx={{ backgroundColor: '#393a36' }} className='my-1'>{skill} <FaXmark className='ms-2' /> </Button>
+                  resumeDetails?.skills?.map(skill => (
+                    <Button onClick={() => removeSkill(skill)} key={skill} variant='contained' sx={{ backgroundColor: '#393a36' }} className='my-1'>{skill} <FaXmark className='ms-2' /> </Button>
                   ))
                 }
               </div>
@@ -99,10 +129,10 @@ function Edit({ resumeDetails, setResumeDetails }) {
             <div>
               <h3>Summary</h3>
               <div className="p-3 row">
-                <TextField value={resumeDetails.summary} onChange={e=>setResumeDetails({...resumeDetails,summary:e.target.value})} id='summary' label='Summary' multiline variant='standard' ></TextField>
+                <TextField value={resumeDetails.summary} onChange={e => setResumeDetails({ ...resumeDetails, summary: e.target.value })} id='summary' label='Summary' multiline variant='standard' ></TextField>
               </div>
             </div>
-            <button className='btn text-light mt-3' style={{ backgroundColor: '#393a36' }}>UPDATE CV</button>
+            <button onClick={handleUpdateResume} className='btn text-light mt-3' style={{ backgroundColor: '#393a36' }}>UPDATE CV</button>
           </Box>
         </Box>
       </Modal>
