@@ -6,7 +6,7 @@ import Edit from '../components/Edit'
 import { MdTextSnippet } from 'react-icons/md';
 import { AiFillBackward } from 'react-icons/ai';
 import { IoMdRefresh } from 'react-icons/io';
-import { viewResumeAPI } from "../services/apiService"
+import { downloadResumeAPI, viewResumeAPI } from "../services/apiService"
 import { useState, useEffect } from 'react';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
@@ -34,11 +34,28 @@ function View() {
   const downloadCV = async ()=>{
     const previewTag = previewRef.current
     const canvas = await html2canvas(previewTag)
+    canvas.toBlob(async (imgFile)=>{
+      const formData = new FormData()
+      formData.append("file",imgFile)
+      formData.append("upload_preset","rBuilder")
+      const result = await fetch("https://api.cloudinary.com/v1_1/mxtkpjgb/image/upload",{method:"POST",body:formData})
+      const serverData = await result.json() 
+      const url=serverData.secure_url
+      generatePDF(url)
+    })
+  }
+
+  const generatePDF = async (resumeImg)=>{
     const pdf = new jsPDF()
     const imageWidth = pdf.internal.pageSize.getWidth()
     const imageHeight = pdf.internal.pageSize.getHeight()
-    pdf.addImage(canvas,"PNG",0,0,imageWidth,imageHeight)
-    pdf.save("resume.pdf")
+    pdf.addImage(resumeImg,"PNG",0,0,imageWidth,imageHeight)
+    const today = new Date()
+    const timeStamp = `${today.toLocaleDateString()}, ${today.toLocaleTimeString()}`
+    const result = await downloadResumeAPI({timeStamp,resumeImg,resumeId:resume.id,jobRole:resume.job})
+    if(result.status==201){
+    pdf.save(`${resume.fullName}-CV.pdf`)
+    }
   }
 
   return (
